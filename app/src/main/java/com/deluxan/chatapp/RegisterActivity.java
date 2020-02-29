@@ -46,35 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = userEmail.getText().toString();
-                String password = userPassword.getText().toString();
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(RegisterActivity.this, "Please enter email", Toast.LENGTH_SHORT).show();
-                } else if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(RegisterActivity.this, "Please enter password", Toast.LENGTH_SHORT).show();
-                } else {
-                    progressDialog.setTitle("Account Registration");
-                    progressDialog.setMessage("It takes some time. Please wait until we finish the register process...");
-                    progressDialog.setCanceledOnTouchOutside(false);
-                    progressDialog.show();
-
-                    auth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        redirectToLogin();
-                                        Toast.makeText(RegisterActivity.this, "Account created successfully!!", Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
-                                    } else {
-                                        String error = task.getException().toString();
-                                        Toast.makeText(RegisterActivity.this, "Error : " + error, Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
-                                    }
-                                }
-                            });
-                }
+                doRegister();
             }
         });
     }
@@ -91,5 +63,37 @@ public class RegisterActivity extends AppCompatActivity {
         alreadyHaveAccount = findViewById(R.id.already_have_account);
 
         progressDialog = new ProgressDialog(this);
+    }
+
+    private void doRegister() {
+        String email = userEmail.getText().toString();
+        String password = userPassword.getText().toString();
+
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(RegisterActivity.this, "Please enter email", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(password)) {
+            Toast.makeText(RegisterActivity.this, "Please enter password", Toast.LENGTH_SHORT).show();
+        } else {
+            progressDialog.setTitle("Account Registration");
+            progressDialog.setMessage("It takes some time. Please wait until we finish the register process...");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+
+            auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                redirectToLogin();
+                                Toast.makeText(RegisterActivity.this, "Account created successfully!!", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            } else {
+                                String error = task.getException().toString();
+                                Toast.makeText(RegisterActivity.this, "Error : " + error, Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+        }
     }
 }
