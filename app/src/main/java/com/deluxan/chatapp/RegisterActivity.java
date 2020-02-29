@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -26,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView alreadyHaveAccount;
 
     private FirebaseAuth auth;
+    private DatabaseReference rootRef;
     private ProgressDialog progressDialog;
 
     @Override
@@ -34,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         auth = FirebaseAuth.getInstance();
+        rootRef = FirebaseDatabase.getInstance().getReference();
         initializeFields();
 
         alreadyHaveAccount.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +58,13 @@ public class RegisterActivity extends AppCompatActivity {
     private void redirectToLogin() {
         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    private void redirectToMain() {
+        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void initializeFields() {
@@ -84,7 +95,9 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                redirectToLogin();
+                                String currentUserId = auth.getCurrentUser().getUid();
+                                rootRef.child("Users").child(currentUserId).setValue("");
+                                redirectToMain();
                                 Toast.makeText(RegisterActivity.this, "Account created successfully!!", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             } else {

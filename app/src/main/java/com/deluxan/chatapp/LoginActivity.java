@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseUser currentUser;
     private FirebaseAuth auth;
     private ProgressDialog progressDialog;
 
@@ -35,7 +34,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
         initializeFields();
 
         needAnAccount.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +58,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void redirectToMain() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        finish();
     }
 
     private void initializeFields() {
@@ -106,12 +106,4 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (currentUser != null) {
-            redirectToMain();
-        }
-    }
 }
